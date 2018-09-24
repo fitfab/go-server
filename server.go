@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -13,31 +12,32 @@ type page struct {
 	Title  string
 	Header string
 	Copy   string
+	Aside  string
 }
 
-var opts = renderer.Options{
-	ParseGlobPattern: "./templates/*.html",
+var rnd *renderer.Render
+
+func init() {
+	rnd = renderer.New()
 }
-var rnd = renderer.New(opts)
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	d := page{Title: "home", Header: "Welcome home", Copy: "This is run by."}
-	err := rnd.HTML(w, http.StatusOK, "layout", d)
+	tpls := []string{"templates/layout.tmpl", "templates/home.tmpl", "templates/partial.tmpl"}
+	err := rnd.Template(w, http.StatusOK, tpls, d)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
-
-// using template from golang
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	p := page{Title: "about", Header: "What About it", Copy: "This the copy for the about page."}
-	t, _ := template.ParseFiles("./templates/index.html")
-	err := t.Execute(w, p)
+
+	d := page{Title: "About", Header: "What about this?", Copy: "This is run by renderer.", Aside: "This is an example using Template method. "}
+	tpls := []string{"templates/layout.tmpl", "templates/about.tmpl", "templates/partial.tmpl"}
+	err := rnd.Template(w, http.StatusOK, tpls, d)
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
 
 func main() {
