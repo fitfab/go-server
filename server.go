@@ -21,14 +21,15 @@ var opts = renderer.Options{
 var rnd = renderer.New(opts)
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("\nroute at %v", r.RequestURI)
-	d := page{Title: "home", Header: "What About home", Copy: "This the copy for the about page."}
+
+	d := page{Title: "home", Header: "Welcome home", Copy: "This is run by."}
 	err := rnd.HTML(w, http.StatusOK, "layout", d)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
+// using template from golang
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	p := page{Title: "about", Header: "What About it", Copy: "This the copy for the about page."}
 	t, _ := template.ParseFiles("./templates/index.html")
@@ -42,10 +43,12 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	port := ":8000"
 	mux := http.NewServeMux()
-	// setup to serve static assets: css, js and images
-	fs := http.StripPrefix("/static", http.FileServer(http.Dir("./static")))
 
+	// setup to serve static assets: css, js and images
+	// good video: https://www.youtube.com/watch?v=fz8pcJTLntI explaining "http.StripPrefix"
+	fs := http.StripPrefix("/static", http.FileServer(http.Dir("./static")))
 	mux.Handle("/static/", fs)
+
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/about", aboutHandler)
 	log.Printf("\nlistenting at %v", port)
