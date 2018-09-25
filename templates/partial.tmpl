@@ -7,9 +7,13 @@
 </nav>
 {{end}}
 
+{{ define "content" }}
+<h2>{{ .Header }}</h2>
+<p>{{.Copy}}</p>
+{{ end }}
+
 {{define "sidebar"}}
 <p>{{ .Aside }}</p>
-
 {{end}}
 
 {{define "footer"}}

@@ -17,30 +17,35 @@ type page struct {
 var tpls *template.Template
 
 func init() {
-	// using Must to handle error and ParseGlob
+	// use Must to handle error
+	// use ParseGlob to parse all templates
 	// cache all templates on this bucket "tpls"
 	tpls = template.Must(template.ParseGlob("templates/*.tmpl"))
 }
 
-func customRender(w http.ResponseWriter, name string, data interface{}) {
-	err := tpls.ExecuteTemplate(w, "layout.tmpl", data)
+func customRender(w http.ResponseWriter, templateName string, data interface{}) {
+	log.Printf("templateName %v", templateName)
+	err := tpls.ExecuteTemplate(w, templateName, data)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	d := page{Title: "home", Header: "Welcome home", Copy: "This is run by.", Aside: "This is extra info"}
-	customRender(w, "layout.tmpl", d)
+	log.Printf("indexHandler %v", r.URL)
+	d := page{Title: "home", Header: "Welcome home", Copy: "This is the template for the home page.", Aside: "This is extra info"}
+	customRender(w, "home.tmpl", d)
 }
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	d := page{Title: "About", Header: "What about it?", Copy: "This is the about page copy."}
-	customRender(w, "layout.tmpl", d)
+	log.Printf("aboutHandler %v", r.URL)
+	d := page{Title: "About", Header: "What about it?", Copy: "This is the about page copy.", Aside: "This is extra for about"}
+	customRender(w, "about.tmpl", d)
 }
 
 func moreHandler(w http.ResponseWriter, r *http.Request) {
-	d := page{Title: "More", Header: "This is more", Copy: "This is the more page copy."}
-	customRender(w, "layout.tmpl", d)
+	log.Printf("moreHandler %v", r.URL)
+	d := page{Title: "More", Header: "This is more", Copy: "This is the more page copy.", Aside: "The data is for More with the home.tmpl"}
+	customRender(w, "home.tmpl", d)
 }
 
 func main() {
@@ -55,6 +60,7 @@ func main() {
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/about", aboutHandler)
 	mux.HandleFunc("/more", moreHandler)
-	log.Printf("\nlistenting at %v", port)
+
+	log.Printf("\nListenting at %v", port)
 	http.ListenAndServe(":8000", mux)
 }

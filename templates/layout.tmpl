@@ -1,3 +1,4 @@
+{{define "layout"}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,14 +8,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <title>{{ template "title" . }}</title>
+    <title>{{ .Title }}</title>
 </head>
 
 <body>
-    {{ block "nav" .}}{{end}}
-    {{ template "content" . }}
-    {{ block "sidebar" .}}{{end}}
-    {{ block "footer" .}}{{end}}
+    <div class="root">
+        {{ block "nav" .}}{{end}}
+        {{ block "content" . }}{{end}}
+        {{ block "sidebar" .}}{{end}}
+        {{ block "footer" .}}{{end}}
+    </div>
 </body>
 
 </html>
+{{end}}
