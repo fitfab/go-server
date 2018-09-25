@@ -8,13 +8,20 @@ body {
     max-width: 980px;
     min-width: 500px;
     width: 100%;
+    height: 100vh;
     margin: 0 auto;
+    background: #eee;
+    padding: 20px;
 }
 
 h1 {
     color: burlywood;
+    margin-top: 0;
 }
-
+nav {
+    border-top: 1px dashed #fff;
+    border-bottom: 1px dashed #fff;
+}
 nav a {
     display: inline-block;
     padding: 5px 15px;
@@ -22,9 +29,10 @@ nav a {
     color: #333;
     text-decoration: none;
 }
-nav a:hover {
-    background: #999;
-    color: #eee;
+nav a:hover,
+nav a.active {
+    background: burlywood;
+    color: #fff;
 }
 
 footer {
