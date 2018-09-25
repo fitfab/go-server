@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-
-	"github.com/thedevsaddam/renderer"
 )
 
 type page struct {
@@ -15,29 +14,33 @@ type page struct {
 	Aside  string
 }
 
-var rnd *renderer.Render
+var tpls *template.Template
 
 func init() {
-	rnd = renderer.New()
+	// using Must to handle error and ParseGlob
+	// cache all templates on this bucket "tpls"
+	tpls = template.Must(template.ParseGlob("templates/*.tmpl"))
+}
+
+func customRender(w http.ResponseWriter, name string, data interface{}) {
+	err := tpls.ExecuteTemplate(w, "layout.tmpl", data)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-
-	d := page{Title: "home", Header: "Welcome home", Copy: "This is run by."}
-	tpls := []string{"templates/layout.tmpl", "templates/home.tmpl", "templates/partial.tmpl"}
-	err := rnd.Template(w, http.StatusOK, tpls, d)
-	if err != nil {
-		fmt.Println(err)
-	}
+	d := page{Title: "home", Header: "Welcome home", Copy: "This is run by.", Aside: "This is extra info"}
+	customRender(w, "layout.tmpl", d)
 }
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	d := page{Title: "About", Header: "What about it?", Copy: "This is the about page copy."}
+	customRender(w, "layout.tmpl", d)
+}
 
-	d := page{Title: "About", Header: "What about this?", Copy: "This is run by renderer.", Aside: "This is an example using Template method. "}
-	tpls := []string{"templates/layout.tmpl", "templates/about.tmpl", "templates/partial.tmpl"}
-	err := rnd.Template(w, http.StatusOK, tpls, d)
-	if err != nil {
-		fmt.Println(err)
-	}
+func moreHandler(w http.ResponseWriter, r *http.Request) {
+	d := page{Title: "More", Header: "This is more", Copy: "This is the more page copy."}
+	customRender(w, "layout.tmpl", d)
 }
 
 func main() {
@@ -51,6 +54,7 @@ func main() {
 
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/about", aboutHandler)
+	mux.HandleFunc("/more", moreHandler)
 	log.Printf("\nlistenting at %v", port)
 	http.ListenAndServe(":8000", mux)
 }
